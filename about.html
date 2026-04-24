@@ -47,6 +47,7 @@
       border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+      position: relative;
     }
     
     .safety-carousel-container .carousel-item {
@@ -128,21 +129,6 @@
     .carousel-control-prev,
     .carousel-control-next {
       width: 10%;
-    }
-
-    /* Paused indicator */
-    .carousel-paused-badge {
-      display: none;
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: rgba(13, 46, 92, 0.8);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      z-index: 10;
-      pointer-events: none;
     }
     
     @media (max-width: 992px) {
@@ -353,14 +339,14 @@
         
         <div class="row justify-content-center">
           <div class="col-12">
-            <!-- Bootstrap 5 Carousel - Starts only when visible -->
+            <!-- Bootstrap 5 Carousel - First image (12M) is active, starts when visible -->
             <div id="improvedSafetyCarousel" class="carousel slide carousel-fade safety-carousel-container" data-bs-ride="false" data-bs-interval="4000">
               
-              <!-- Indicators -->
+              <!-- Indicators - First indicator is active -->
               <div class="carousel-indicators">
-                <button type="button" data-bs-target="#improvedSafetyCarousel" data-bs-slide-to="0" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#improvedSafetyCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
                 <button type="button" data-bs-target="#improvedSafetyCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                <button type="button" data-bs-target="#improvedSafetyCarousel" data-bs-slide-to="2" class="active" aria-current="true" aria-label="Slide 3"></button>
+                <button type="button" data-bs-target="#improvedSafetyCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
                 <button type="button" data-bs-target="#improvedSafetyCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
                 <button type="button" data-bs-target="#improvedSafetyCarousel" data-bs-slide-to="4" aria-label="Slide 5"></button>
                 <button type="button" data-bs-target="#improvedSafetyCarousel" data-bs-slide-to="5" aria-label="Slide 6"></button>
@@ -368,9 +354,9 @@
                 <button type="button" data-bs-target="#improvedSafetyCarousel" data-bs-slide-to="7" aria-label="Slide 8"></button>
               </div>
 
-              <!-- Slides with Clickable Links -->
+              <!-- Slides - First image (12M) is active -->
               <div class="carousel-inner">
-                <div class="carousel-item">
+                <div class="carousel-item active">
                   <a href="./safety-12m.html" target="_blank">
                     <img src="./assets/img/12-mil.jpg" class="d-block w-100" alt="12 Million Safe Man-hours" loading="lazy">
                   </a>
@@ -380,7 +366,7 @@
                     <img src="./assets/img/11M tarp.png" class="d-block w-100" alt="11 Million Safe Man-hours" loading="lazy">
                   </a>
                 </div>
-                <div class="carousel-item active">
+                <div class="carousel-item">
                   <a href="./safety-10m.html" target="_blank">
                     <img src="./assets/img/10-M-SafetyHours.png" class="d-block w-100" alt="10 Million Safe Man-hours" loading="lazy">
                   </a>
@@ -529,7 +515,7 @@
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
 
-  <!-- Intersection Observer for Carousel Auto-Start -->
+  <!-- Intersection Observer for Carousel Auto-Start from 1st image -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const carouselElement = document.getElementById('improvedSafetyCarousel');
@@ -545,10 +531,16 @@
       });
 
       let carouselStarted = false;
-      let carouselInterval = null;
+      let wasReset = false; // Track if we've reset to first slide
 
-      // Function to start the carousel cycling
-      function startCarousel() {
+      // Function to reset and start the carousel from the first image
+      function resetAndStartCarousel() {
+        if (!wasReset) {
+          // Go to first slide
+          carousel.to(0);
+          wasReset = true;
+        }
+        
         if (!carouselStarted) {
           carouselStarted = true;
           carouselElement.setAttribute('data-bs-ride', 'carousel');
@@ -556,24 +548,25 @@
         }
       }
 
-      // Function to stop the carousel cycling
-      function stopCarousel() {
+      // Function to stop the carousel and mark for reset
+      function stopAndResetCarousel() {
         if (carouselStarted) {
           carouselStarted = false;
           carouselElement.removeAttribute('data-bs-ride');
           carousel.pause();
         }
+        wasReset = false; // Reset flag so it goes back to first slide next time
       }
 
       // Create Intersection Observer
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            // Carousel is visible - start it
-            startCarousel();
+            // Carousel is visible - reset to first slide and start
+            resetAndStartCarousel();
           } else {
-            // Carousel is not visible - stop it
-            stopCarousel();
+            // Carousel is not visible - stop and prepare for reset
+            stopAndResetCarousel();
           }
         });
       }, {
@@ -585,7 +578,7 @@
       // Start observing the carousel
       observer.observe(carouselElement);
 
-      // Optional: Pause carousel when user hovers over it
+      // Pause carousel when user hovers over it
       carouselElement.addEventListener('mouseenter', function () {
         carousel.pause();
       });
