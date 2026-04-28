@@ -1,14 +1,18 @@
-# Fix HTTPS and Missing Vendor Libraries
+# Refactor: Remove Unused CSS/JS and Centralize Common Code
 
-## Steps
-- [x] Step 1: Create `.htaccess` to force HTTPS redirect
-- [x] Step 2: Update `index.html` — replace local vendor paths with CDN links
-- [x] Step 3: Update `contact.html` — replace local vendor paths with CDN links
-- [x] Step 4: Update `services.html` — replace local vendor paths with CDN links
-- [x] Step 5: Update `about.html` — replace local vendor paths with CDN links
-- [x] Step 6: Update `news.html` — replace local vendor paths with CDN links
-- [x] Step 7: Update `org.html` — replace local vendor paths with CDN links
-- [x] Step 8: Update `careers.html` — replace local vendor paths with CDN links
-- [x] Step 9: Update remaining HTML files (disclaimer, error, termsofuse, CSR pages, SafetyManHours pages)
-- [x] Step 10: Verify all changes and complete
+## Issues
+- [x] Topbar, Header, Footer duplicated across ~20 HTML files
+- [x] Two nearly identical CSS files (style.css & style1.css), both with 300+ lines of unused rules
+- [x] Unused vendor libraries loaded on every page (FontAwesome, glightbox, isotope-layout)
+- [x] main.js initializes all plugins unconditionally
 
+## Plan
+
+### Phase 1: Create Shared Components System
+- [ ] Create `assets/js/components.js` — shared Topbar/Header/Footer injector
+
+### Phase 2: Consolidate & Clean CSS
+- [ ] Merge `style.css` + `style1.css` into one `style.css`
+- [ ] Add `.hero-short` class for pages needing 50vh hero
+- [ ] Remove ~300+ lines of unused CSS rules
+- [ ] Delete `
